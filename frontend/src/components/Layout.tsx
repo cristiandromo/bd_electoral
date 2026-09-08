@@ -7,8 +7,7 @@ const NAV = [
   { to: "/comunas", etiqueta: "Comunas", roles: null },
   { to: "/barrios", etiqueta: "Barrios", roles: null },
   { to: "/personas", etiqueta: "Personas", roles: null },
-  { to: "/roles", etiqueta: "Roles", roles: ["ADMIN"] },
-  { to: "/usuarios", etiqueta: "Usuarios", roles: ["ADMIN"] },
+  { to: "/admin", etiqueta: "Administración", roles: ["ADMIN"] },
 ];
 
 export default function Layout() {

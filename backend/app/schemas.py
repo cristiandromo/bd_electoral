@@ -195,3 +195,22 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
     usuario: UsuarioRead
+
+
+# ---------------------------------------------------------------
+# Reportes (solo ADMIN)
+# ---------------------------------------------------------------
+class ReportePorComuna(BaseModel):
+    comuna_id: int
+    numero: int
+    comuna: str
+    barrios: int
+    personas: int
+
+
+class ResumenReporte(BaseModel):
+    comunas: int
+    barrios: int
+    personas: int
+    usuarios: int
+    por_comuna: list[ReportePorComuna]

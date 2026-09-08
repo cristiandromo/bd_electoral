@@ -52,3 +52,19 @@ export interface LoginResponse {
   token_type: string;
   usuario: Usuario;
 }
+
+export interface ReportePorComuna {
+  comuna_id: number;
+  numero: number;
+  comuna: string;
+  barrios: number;
+  personas: number;
+}
+
+export interface ResumenReporte {
+  comunas: number;
+  barrios: number;
+  personas: number;
+  usuarios: number;
+  por_comuna: ReportePorComuna[];
+}

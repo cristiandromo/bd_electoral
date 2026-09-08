@@ -1,6 +1,10 @@
 import os
 
-os.environ["DATABASE_URL"] = "mysql+pymysql://root:@127.0.0.1:3307/bditagui_test"
+TEST_DATABASE_URL = os.environ.get(
+    "TEST_DATABASE_URL",
+    "mysql+pymysql://root:@127.0.0.1:3307/bditagui_test",
+)
+os.environ["DATABASE_URL"] = TEST_DATABASE_URL
 os.environ.setdefault("JWT_SECRET", "clave-de-prueba-no-segura")
 
 import pytest

@@ -68,8 +68,8 @@ export default function Dashboard() {
             Administrar personas
           </Link>
           {rol === "ADMIN" && (
-            <Link className="btn" to="/usuarios">
-              Usuarios del sistema
+            <Link className="btn" to="/admin">
+              Administración
             </Link>
           )}
         </div>

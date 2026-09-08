@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..deps import role_required
-from ..models import Barrio, Persona, Usuario
+from ..models import Barrio, Persona
 from ..schemas import (
     PersonaCreate,
     PersonaRead,

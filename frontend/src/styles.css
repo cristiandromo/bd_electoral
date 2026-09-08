@@ -552,6 +552,93 @@ select option {
   font-style: italic;
 }
 
+/* ---------- Módulo de administración ---------- */
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 1px dashed var(--border-strong);
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+
+.admin-tabs a {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.admin-tabs a:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.admin-tabs a.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.seccion {
+  margin-bottom: 24px;
+}
+
+.grupo-titulo {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0 0 12px;
+}
+
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.link-card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s;
+}
+
+.link-card:hover {
+  border-color: var(--accent);
+}
+
+.link-card .etiqueta {
+  color: var(--accent-bright);
+  font-weight: 700;
+}
+
+.link-card .desc {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.ayuda {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 12px 0 0;
+}
+
 .toolbar {
   display: flex;
   gap: 10px;

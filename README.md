@@ -147,6 +147,10 @@ El usuario inicial que crea `seed_admin` es `admin@itagui.com` / `Admin123!`
 | POST   | `/usuarios`        | Crear usuario                  | ADMIN            |
 | PUT    | `/usuarios/{id}`   | Actualizar usuario             | ADMIN            |
 | DELETE | `/usuarios/{id}`   | Eliminar usuario               | ADMIN            |
+| GET    | `/reportes/resumen`| Conteos totales y por comuna   | ADMIN            |
+| GET    | `/reportes/exportar/barrios`  | Exporta barrios a CSV  | ADMIN            |
+| GET    | `/reportes/exportar/personas` | Exporta personas a CSV (`?comuna_id=` filtra) | ADMIN |
+| GET    | `/reportes/exportar/resumen`  | Exporta resumen por comuna a CSV | ADMIN        |
 | GET    | `/health`          | Estado de la API               | público          |
 
 ## Tests
@@ -174,10 +178,6 @@ borrar una comuna que tenga barrios).
   no es para producción.
 - No hay capa de tests para el frontend.
 
-## Autor
-
-Cristian — reemplaza por tu usuario de GitHub y deja el enlace si quieres
-(mencionar: repositorio o linkedin).
 
 Los datos de comunas y barrios provienen de la división administrativa pública de
 Itagüí (Acuerdo 17 del 30/dic/2024).

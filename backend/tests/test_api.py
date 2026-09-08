@@ -348,3 +348,103 @@ def test_eliminar_persona_cascada_usuario(client, admin_headers):
     resp = client.delete(f"/personas/{persona_id}", headers=admin_headers)
     assert resp.status_code == 204
     assert client.get(f"/usuarios/{usuario_id}", headers=admin_headers).status_code == 404
+
+
+# ------------------------------------------------------------------
+# Reportes (solo ADMIN)
+# ------------------------------------------------------------------
+def _crear_comuna_barrio_y_persona(client, headers, numero=5):
+    comuna_id = _crear_comuna(client, headers, numero=numero)
+    resp = client.post(
+        "/barrios",
+        headers=headers,
+        json={"comuna_id": comuna_id, "nombre": "Centro Reporte"},
+    )
+    assert resp.status_code == 201, resp.text
+    barrio_id = resp.json()["id"]
+    persona = client.post(
+        "/personas",
+        headers=headers,
+        json={
+            "tipo_documento": "CC",
+            "documento": "777000111",
+            "nombres": "Reporte",
+            "apellidos": "Prueba",
+            "barrio_id": barrio_id,
+        },
+    )
+    assert persona.status_code == 201, persona.text
+    return comuna_id
+
+
+def test_resumen_solo_admin(client, operador_headers, consulta_headers):
+    assert client.get("/reportes/resumen", headers=operador_headers).status_code == 403
+    assert client.get("/reportes/resumen", headers=consulta_headers).status_code == 403
+
+
+def test_resumen_conteos_y_por_comuna(client, admin_headers, operador_headers):
+    _crear_comuna_barrio_y_persona(client, operador_headers)
+
+    resp = client.get("/reportes/resumen", headers=admin_headers)
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+
+    # En la BD de prueba: comuna nueva + admin/operador/consulta (personas)
+    assert body["comunas"] == 1
+    assert body["barrios"] == 1
+    assert body["personas"] == 4
+    assert body["usuarios"] == 3
+
+    fila = body["por_comuna"][0]
+    assert fila["comuna"] == "Comuna 5"
+    assert fila["barrios"] == 1
+    assert fila["personas"] == 1
+
+
+def test_exportar_csv_solo_admin(client, operador_headers):
+    resp = client.get("/reportes/exportar/barrios", headers=operador_headers)
+    assert resp.status_code == 403
+    resp = client.get("/reportes/exportar/personas", headers=operador_headers)
+    assert resp.status_code == 403
+
+
+def test_exportar_barrios_csv(client, admin_headers, operador_headers):
+    _crear_comuna_barrio_y_persona(client, operador_headers)
+
+    resp = client.get("/reportes/exportar/barrios", headers=admin_headers)
+    assert resp.status_code == 200
+    assert "text/csv" in resp.headers["content-type"]
+    assert "attachment" in resp.headers["content-disposition"]
+    assert "Centro Reporte" in resp.text
+    assert "barrio" in resp.text
+
+
+def test_exportar_personas_csv_y_filtro(client, admin_headers, operador_headers):
+    comuna_id = _crear_comuna_barrio_y_persona(client, operador_headers)
+
+    resp = client.get("/reportes/exportar/personas", headers=admin_headers)
+    assert resp.status_code == 200
+    assert "Reporte" in resp.text and "Prueba" in resp.text
+
+    filtrado = client.get(
+        "/reportes/exportar/personas",
+        headers=admin_headers,
+        params={"comuna_id": comuna_id},
+    )
+    assert filtrado.status_code == 200
+    assert "Reporte" in filtrado.text
+
+    inexistente = client.get(
+        "/reportes/exportar/personas",
+        headers=admin_headers,
+        params={"comuna_id": 9999},
+    )
+    assert inexistente.status_code == 404
+
+
+def test_exportar_resumen_csv(client, admin_headers, operador_headers):
+    _crear_comuna_barrio_y_persona(client, operador_headers)
+
+    resp = client.get("/reportes/exportar/resumen", headers=admin_headers)
+    assert resp.status_code == 200
+    assert "Comuna 5" in resp.text

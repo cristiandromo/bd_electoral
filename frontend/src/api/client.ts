@@ -41,39 +41,71 @@ interface RequestOptions {
   body?: unknown;
 }
 
-async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
-  const { method = "GET", body } = opts;
+function sesionExpirada(): void {
+  clearSession();
+  window.dispatchEvent(new Event("auth-expired"));
+}
+
+function cabecerasAutenticadas(): Record<string, string> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
+  return headers;
+}
+
+async function mensajeDeError(response: Response): Promise<string> {
+  let detail: unknown = response.statusText;
+  try {
+    const data = await response.json();
+    detail = data.detail ?? data;
+  } catch {
+    /* cuerpo no JSON */
+  }
+  return Array.isArray(detail)
+    ? detail.map((d) => (typeof d === "string" ? d : d.msg)).join("; ")
+    : String(detail);
+}
+
+async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
+  const { method = "GET", body } = opts;
 
   const response = await fetch(`${API_BASE}${path}`, {
     method,
-    headers,
+    headers: cabecerasAutenticadas(),
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
-  if (response.status === 401) {
-    clearSession();
-    window.dispatchEvent(new Event("auth-expired"));
-  }
+  if (response.status === 401) sesionExpirada();
 
   if (!response.ok) {
-    let detail: unknown = response.statusText;
-    try {
-      const data = await response.json();
-      detail = data.detail ?? data;
-    } catch {
-      /* cuerpo no JSON */
-    }
-    const mensaje = Array.isArray(detail)
-      ? detail.map((d) => (typeof d === "string" ? d : d.msg)).join("; ")
-      : String(detail);
-    throw new ApiError(response.status, mensaje);
+    throw new ApiError(response.status, await mensajeDeError(response));
   }
 
   if (response.status === 204) return undefined as T;
   return (await response.json()) as T;
+}
+
+export async function descargarCSV(
+  path: string,
+  nombreArchivo: string,
+): Promise<void> {
+  const response = await fetch(`${API_BASE}${path}`, {
+    headers: cabecerasAutenticadas(),
+  });
+
+  if (response.status === 401) sesionExpirada();
+
+  if (!response.ok) {
+    throw new ApiError(response.status, await mensajeDeError(response));
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const enlace = document.createElement("a");
+  enlace.href = url;
+  enlace.download = nombreArchivo;
+  enlace.click();
+  URL.revokeObjectURL(url);
 }
 
 export const api = {

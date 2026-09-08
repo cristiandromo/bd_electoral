@@ -1,9 +1,16 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from dotenv import load_dotenv
 
 load_dotenv()  # variables de entorno desde backend/.env (si existe)
+
+
+def _lista_env(nombre: str, defecto: list[str]) -> list[str]:
+    valor = os.getenv(nombre)
+    if not valor:
+        return defecto
+    return [origen.strip() for origen in valor.split(",") if origen.strip()]
 
 
 @dataclass(frozen=True)
@@ -24,6 +31,12 @@ class Settings:
     admin_password: str = os.getenv("ADMIN_PASSWORD", "Admin123!")
     admin_nombres: str = os.getenv("ADMIN_NOMBRES", "Administrador")
     admin_apellidos: str = os.getenv("ADMIN_APELLIDOS", "del Sistema")
+    cors_origins: list[str] = field(
+        default_factory=lambda: _lista_env(
+            "CORS_ORIGINS",
+            ["http://localhost:5173", "http://127.0.0.1:5173"],
+        )
+    )
 
 
 settings = Settings()
