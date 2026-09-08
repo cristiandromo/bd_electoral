@@ -169,16 +169,4 @@ Cubren login (éxito, contraseña incorrecta y bloqueo por intentos), registro,
 permisos por rol, CRUD de los recursos e integridad referencial (por ejemplo, no
 borrar una comuna que tenga barrios).
 
-## Cosas que quedaron pendientes / por mejorar
 
-- El esquema se crea ejecutando `bd.sql`; no hay migraciones (Alembic) todavía.
-- CORS está abierto (`allow_origins=["*"]`) porque es un proyecto de práctica;
-  conviene restringirlo si se despliega.
-- `JWT_SECRET` debe cambiarse fuera de desarrollo; el ejemplo en `.env.example`
-  no es para producción.
-- No hay capa de tests para el frontend.
-
-
-Los datos de comunas y barrios provienen de la división administrativa pública de
-Itagüí (Acuerdo 17 del 30/dic/2024).
-# bd_electoral
