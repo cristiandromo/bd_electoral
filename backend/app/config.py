@@ -1,0 +1,29 @@
+import os
+from dataclasses import dataclass
+
+from dotenv import load_dotenv
+
+load_dotenv()  # variables de entorno desde backend/.env (si existe)
+
+
+@dataclass(frozen=True)
+class Settings:
+    database_url: str = os.getenv(
+        "DATABASE_URL",
+        "mysql+pymysql://root:@localhost:3306/bditagui",
+    )
+    jwt_secret: str = os.getenv(
+        "JWT_SECRET", "cambia-esta-clave-por-una-segura-en-produccion"
+    )
+    jwt_algorithm: str = os.getenv("JWT_ALGORITHM", "HS256")
+    access_token_expire_minutes: int = int(
+        os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "480")
+    )
+    create_tables: bool = os.getenv("CREATE_TABLES", "false").lower() == "true"
+    admin_email: str = os.getenv("ADMIN_EMAIL", "admin@itagui.com")
+    admin_password: str = os.getenv("ADMIN_PASSWORD", "Admin123!")
+    admin_nombres: str = os.getenv("ADMIN_NOMBRES", "Administrador")
+    admin_apellidos: str = os.getenv("ADMIN_APELLIDOS", "del Sistema")
+
+
+settings = Settings()
